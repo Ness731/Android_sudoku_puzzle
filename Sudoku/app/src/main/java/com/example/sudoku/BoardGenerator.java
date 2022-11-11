@@ -56,12 +56,16 @@ public class BoardGenerator {
 
         // 랜덤 순서로 1~9의 숫자 생성
         ArrayList<Integer> list = new ArrayList<>();
+
+        // 1. 1~9를 list에 저장
         for(int i = 1; i <= 9; i++) {
             list.add(i);
         }
-        Collections.shuffle(list);  // 랜덤, 이 줄을 없애면 언제나 같은 보드가 나옴
+        // 2. list 안의 내용을 랜덤하게 섞음
+        Collections.shuffle(list);
 
-        for(int i = 0; i < 9; i++) {
+        // 3. 3*3 버튼 안에 9개의 숫자를 삽입
+       for(int i = 0; i < 9; i++) {
             s0[i / 3][i % 3] = list.get(i);
         }
 
@@ -88,11 +92,12 @@ public class BoardGenerator {
             }
         }
     }
-
+    // board 전체를 반환하는 메소드
     public int[][] get() {
         return board;
     }
 
+    // 입력받은 위치의 board를 반환하는 메소드
     public int get(int row, int col) {
         return board[row][col];
     }
