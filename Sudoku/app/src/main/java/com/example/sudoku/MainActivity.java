@@ -1,46 +1,27 @@
 package com.example.sudoku;
 
-import androidx.appcompat.app.AppCompatActivity;
-
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
-import android.widget.TableLayout;
-import android.widget.TableRow;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.sudoku);
-        initContent();
-    }
+        setContentView(R.layout.activity_main);
+        getSupportActionBar().hide();
 
-    private void initContent() {
-        final TableLayout tableLayout = (TableLayout) findViewById(R.id.tableLayout);
-        // 버튼이 화면을 넘어가지 않도록 자동 크기 조절
-        tableLayout.setShrinkAllColumns(true);
+        Button button = (Button) findViewById(R.id.play_button);
 
-        Button buttons[][] = new Button[9][9];
-        for (int i = 0; i < 9; i++) {
-            final TableRow tableRow = new TableRow(this);
-            tableRow.setLayoutParams(new TableLayout.LayoutParams(
-                    TableLayout.LayoutParams.WRAP_CONTENT,
-                    TableLayout.LayoutParams.WRAP_CONTENT)
-            );
-            for (int j = 0; j < 9; j++) {
-
-                BoardGenerator board = new BoardGenerator();
-                buttons[i][j] = new Button(this);
-                buttons[i][j].setLayoutParams(new TableRow.LayoutParams(
-                        TableRow.LayoutParams.WRAP_CONTENT,
-                        TableRow.LayoutParams.WRAP_CONTENT)
-                );
-                // board.get(i, j)는 int를 반환하고 setText는 String을 받기 때문에 String으로 형변환 필요
-                String number = Integer.toString(board.get(i, j));
-                buttons[i][j].setText(number);
-                tableRow.addView(buttons[i][j]);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(),HomeActivity.class);
+                startActivity(intent);
             }
-            tableLayout.addView(tableRow);
-        }
+        });
     }
 }
