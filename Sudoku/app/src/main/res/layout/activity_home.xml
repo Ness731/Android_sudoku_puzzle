@@ -7,18 +7,18 @@
     <TableLayout
         android:id="@+id/tableLayout"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_above="@+id/confButton"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/resetButton"
         android:layout_centerHorizontal="true"
         android:layout_marginLeft="5dp"
         android:layout_marginTop="5dp"
         android:layout_marginRight="5dp"
-        android:layout_marginBottom="2dp"
-        android:background="#000000"
+        android:layout_marginBottom="1dp"
+        android:background="#808080"
         android:stretchColumns="*" />
 
     <Button
-        android:id="@+id/confButton"
+        android:id="@+id/resetButton"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -29,4 +29,12 @@
         android:layout_marginBottom="5dp"
         android:text="@string/reset_button"
         tools:context=".HomeActivity" />
+
+    <TextView
+        android:id="@+id/inputNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Input Number" />
+
 </RelativeLayout>
