@@ -1,23 +1,24 @@
 package com.example.sudoku;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
-import android.widget.Toast;
+
+import es.dmoral.toasty.Toasty;
 
 public class HomeActivity extends AppCompatActivity {
     int[] margin = new int[4];
     final Button buttons[][] = new Button[9][9];
     final int[] buttonID = new int[]{R.id.num1, R.id.num2, R.id.num3,
-            R.id.num4, R.id.num5, R.id.num6, R.id.num7, 
+            R.id.num4, R.id.num5, R.id.num6, R.id.num7,
             R.id.num8, R.id.num9, R.id.cancel, R.id.confirm};
 
     @Override
@@ -27,30 +28,27 @@ public class HomeActivity extends AppCompatActivity {
         initContent();
     }
 
+    @SuppressLint("ResourceAsColor")
     private void createButton(TableLayout tableLayout, Context context) {
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
                 // custom dialog
+                View dialogButton = null;
                 final Dialog dialog = new Dialog(context);
-                String msg = null;
                 dialog.setContentView(R.layout.custom);
                 for (int i = 0; i < buttonID.length; i++) {
-                    Button dialogButton = (Button) dialog.findViewById(buttonID[i]);
-                    if(i < 9) 
-                        msg = (i + 1) + "번";
-                    if(buttonID[i] == R.id.cancel)
-                        msg = "취소";
-                    if(buttonID[i] == R.id.confirm)
-                        msg = "확인";
-                    msg += " 버튼이 클릭되었습니다.";
-                    // if button is clicked, close the custom dialog
-                    String finalMsg = msg;
+                    if (i < 9) {
+                        dialogButton = (Button) dialog.findViewById(buttonID[i]);
+                    } else {
+                        dialogButton = (ImageButton) dialog.findViewById(buttonID[i]);
+                    }
+                    int finalI = i;
                     dialogButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             dialog.dismiss();
-                            Toast.makeText(getApplicationContext(), finalMsg, Toast.LENGTH_SHORT).show();
+                            Toasty.success(context, dialogMsg(finalI)).show();
                         }
                     });
                 }
@@ -81,6 +79,7 @@ public class HomeActivity extends AppCompatActivity {
                 // board.get(i, j)는 int를 반환하고 setText는 String을 받기 때문에 String으로 형변환 필요
                 String number = Integer.toString(board.get(i, j));
                 buttons[i][j].setText(number);
+                buttons[i][j].setBackgroundColor(R.color.white);
                 tableRow.addView(buttons[i][j]);
                 buttons[i][j].setOnClickListener(listener);
             }
@@ -125,5 +124,18 @@ public class HomeActivity extends AppCompatActivity {
         if (i == 0) margin[1] = 20;
         if (j == 3 || j == 6) margin[0] = 10;
         if (i == 3 || i == 6) margin[1] = 10;
+    }
+
+    private String dialogMsg(int i) {
+        String msg = null;
+        if (i < 9)
+            msg = (i + 1) + "번";
+        if (buttonID[i] == R.id.cancel)
+            msg = "취소";
+        if (buttonID[i] == R.id.confirm)
+            msg = "확인";
+        msg += " 버튼이 클릭되었습니다.";
+        // if button is clicked, close the custom dialog
+        return msg;
     }
 }
