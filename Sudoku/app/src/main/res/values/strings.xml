@@ -4,4 +4,8 @@
     <string name="title_activity_intro">IntroActivity</string>
     <string name="play_button">Play</string>
     <string name="intro_content">SUDOKU\nPUZZLE</string>
+    <string name="numberpad_content">Input Number</string>
+    <string name="numberpad_num">Num</string>
+    <string name="reset_dialog">Reset Game</string>
+    <string name="reset_dialog_content">Are you sure you want\nto reset the game?</string>
 </resources>
