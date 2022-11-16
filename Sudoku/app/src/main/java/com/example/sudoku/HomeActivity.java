@@ -5,21 +5,26 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 
+import com.google.android.material.button.MaterialButton;
+
 import es.dmoral.toasty.Toasty;
 
 public class HomeActivity extends AppCompatActivity {
-    int[] margin = new int[4];
-    final Button buttons[][] = new Button[9][9];
+    final MaterialButton buttons[][] = new MaterialButton[9][9];
     final int[] buttonID = new int[]{R.id.num1, R.id.num2, R.id.num3,
             R.id.num4, R.id.num5, R.id.num6, R.id.num7,
             R.id.num8, R.id.num9, R.id.cancel, R.id.confirm};
+    final Context context = this;
+    int[] margin = new int[4];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,15 +33,54 @@ public class HomeActivity extends AppCompatActivity {
         initContent();
     }
 
+    private void initContent() {
+        // 버튼이 화면을 넘어가지 않도록 자동 크기 조절
+        final TableLayout tableLayout = (TableLayout) findViewById(R.id.tableLayout);
+        tableLayout.setShrinkAllColumns(true);
+        initResetButton();
+        createButton(tableLayout);
+    }
+
+    private void initResetButton() {
+        final Button button = (Button) findViewById(R.id.resetButton);
+        final String[] resetMessage = {"게임이 초기화되었습니다.", "초기화 취소"};
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                final Dialog dialog = new Dialog(context);
+                dialog.setContentView(R.layout.reset_dialog);
+
+                Button reset_cancel = (Button) dialog.findViewById(R.id.reset_cancel);
+                Button reset_confirm = (Button) dialog.findViewById(R.id.reset_confirm);
+
+                reset_cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                        Toasty.info(context, resetMessage[1]).show();
+                    }
+                });
+                reset_confirm.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        initNumber();
+                        dialog.dismiss();
+                        Toasty.info(context, resetMessage[0]).show();
+                    }
+                });
+                dialog.show();
+            }
+        });
+    }
+
     @SuppressLint("ResourceAsColor")
-    private void createButton(TableLayout tableLayout, Context context) {
+    private void createButton(TableLayout tableLayout) {
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                // custom dialog
                 View dialogButton = null;
                 final Dialog dialog = new Dialog(context);
-                dialog.setContentView(R.layout.custom);
+                dialog.setContentView(R.layout.number_pad);
                 for (int i = 0; i < buttonID.length; i++) {
                     if (i < 9) {
                         dialogButton = (Button) dialog.findViewById(buttonID[i]);
@@ -48,7 +92,7 @@ public class HomeActivity extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
                             dialog.dismiss();
-                            Toasty.success(context, dialogMsg(finalI)).show();
+                            Toasty.info(context, initMessage(finalI)).show();
                         }
                     });
                 }
@@ -58,15 +102,15 @@ public class HomeActivity extends AppCompatActivity {
 
         // i=row, j=column을 의미함
         for (int i = 0; i < 9; i++) {
-            final TableRow tableRow = new TableRow(this);
+            final TableRow tableRow = new TableRow(context);
             tableRow.setLayoutParams(new TableLayout.LayoutParams(
                     TableLayout.LayoutParams.WRAP_CONTENT,
                     TableLayout.LayoutParams.WRAP_CONTENT)
             );
+            tableRow.setPadding(0, -15, 0, -15);
             for (int j = 0; j < 9; j++) {
-                initMargin();
                 BoardGenerator board = new BoardGenerator();
-                buttons[i][j] = new Button(this);
+                buttons[i][j] = new MaterialButton(context);
                 TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(
                         TableRow.LayoutParams.WRAP_CONTENT,
                         TableRow.LayoutParams.WRAP_CONTENT,
@@ -75,34 +119,16 @@ public class HomeActivity extends AppCompatActivity {
                 setMargin(i, j);
                 // setMargins(left, top, right, bottom)
                 layoutParams.setMargins(margin[0], margin[1], margin[2], margin[3]);
-                buttons[i][j].setLayoutParams(layoutParams);
                 // board.get(i, j)는 int를 반환하고 setText는 String을 받기 때문에 String으로 형변환 필요
                 String number = Integer.toString(board.get(i, j));
-                buttons[i][j].setText(number);
-                buttons[i][j].setBackgroundColor(R.color.white);
+                setButtonDesign(i, j, number, layoutParams, listener);
                 tableRow.addView(buttons[i][j]);
-                buttons[i][j].setOnClickListener(listener);
             }
             tableLayout.addView(tableRow);
         }
     }
 
-    private void initContent() {
-        // 버튼이 화면을 넘어가지 않도록 자동 크기 조절
-        final TableLayout tableLayout = (TableLayout) findViewById(R.id.tableLayout);
-        tableLayout.setShrinkAllColumns(true);
-        createButton(tableLayout, this);
-
-        final Button button = (Button) findViewById(R.id.resetButton);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                resetNumber();
-            }
-        });
-    }
-
-    private void resetNumber() {
+    private void initNumber() {
         BoardGenerator board = new BoardGenerator();
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
@@ -114,10 +140,24 @@ public class HomeActivity extends AppCompatActivity {
 
     private void initMargin() {
         for (int i = 0; i < margin.length; i++)
-            margin[i] = 0;
+            margin[i] = 2;
+    }
+
+    @SuppressLint("ResourceAsColor")
+    private void setButtonDesign(int i, int j, String number, ViewGroup.LayoutParams layoutParams,
+                                 View.OnClickListener listener) {
+        buttons[i][j].setLayoutParams(layoutParams);
+        buttons[i][j].setText(number);
+        buttons[i][j].setTextSize(20);
+        buttons[i][j].setTextColor(R.color.black);
+        buttons[i][j].setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.white)));
+        buttons[i][j].setOnClickListener(listener);
+        buttons[i][j].setCornerRadius(0);
     }
 
     private void setMargin(int i, int j) {
+        // [0] = left, [1] = top, [2] = right, [3] = bottom)
+        initMargin();
         if (j == 8) margin[2] = 20;
         if (j == 0) margin[0] = 20;
         if (i == 8) margin[3] = 20;
@@ -126,7 +166,7 @@ public class HomeActivity extends AppCompatActivity {
         if (i == 3 || i == 6) margin[1] = 10;
     }
 
-    private String dialogMsg(int i) {
+    private String initMessage(int i) {
         String msg = null;
         if (i < 9)
             msg = (i + 1) + "번";
