@@ -16,6 +16,9 @@ import android.widget.TableRow;
 
 import com.google.android.material.button.MaterialButton;
 
+import java.util.HashMap;
+import java.util.Random;
+
 import es.dmoral.toasty.Toasty;
 
 public class HomeActivity extends AppCompatActivity {
@@ -24,7 +27,9 @@ public class HomeActivity extends AppCompatActivity {
             R.id.num4, R.id.num5, R.id.num6, R.id.num7,
             R.id.num8, R.id.num9, R.id.cancel, R.id.confirm};
     final Context context = this;
+    final int[][] groups = new int[][]{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
     int[] margin = new int[4];
+    BoardGenerator board;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,31 +106,65 @@ public class HomeActivity extends AppCompatActivity {
         };
 
         // i=row, j=column을 의미함
-        for (int i = 0; i < 9; i++) {
+        for (int row = 0; row < 9; row++) {
             final TableRow tableRow = new TableRow(context);
             tableRow.setLayoutParams(new TableLayout.LayoutParams(
                     TableLayout.LayoutParams.WRAP_CONTENT,
                     TableLayout.LayoutParams.WRAP_CONTENT)
             );
             tableRow.setPadding(0, -15, 0, -15);
-            for (int j = 0; j < 9; j++) {
-                BoardGenerator board = new BoardGenerator();
-                buttons[i][j] = new MaterialButton(context);
+            for (int col = 0; col < 9; col++) {
+                board = new BoardGenerator();
+                buttons[row][col] = new MaterialButton(context);
                 TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(
                         TableRow.LayoutParams.WRAP_CONTENT,
                         TableRow.LayoutParams.WRAP_CONTENT,
                         1.0f);
+
                 // 3개 단위로 margin을 크게 주는 함수
-                setMargin(i, j);
+                setMargin(row, col);
+
                 // setMargins(left, top, right, bottom)
                 layoutParams.setMargins(margin[0], margin[1], margin[2], margin[3]);
+
                 // board.get(i, j)는 int를 반환하고 setText는 String을 받기 때문에 String으로 형변환 필요
-                String number = Integer.toString(board.get(i, j));
-                setButtonDesign(i, j, number, layoutParams, listener);
-                tableRow.addView(buttons[i][j]);
+                String number = Integer.toString(board.get(row, col));
+                setButtonDesign(row, col, number, layoutParams, listener);
+                tableRow.addView(buttons[row][col]);
             }
             tableLayout.addView(tableRow);
         }
+    }
+
+    private void setAllEmptyButton() {
+        for (int[] rows : groups) {
+            for (int[] cols : groups) {
+                setEmptyButton(rows, cols);
+            }
+        }
+    }
+
+    private void setEmptyButton(int[] rows, int[] cols) {
+        HashMap<Integer, Integer> elements = new HashMap<>();
+        Random rand = new Random();
+        int randomCount = rand.nextInt(5) + 2; // 빈 블록 개수는 2~6개
+        int randomIndex;
+        int emptyRow, emptyCol;
+
+        for (int row = 0; row < rows.length; row++) { // 3x3 영역의 좌표를 hashmap 형태로 변환
+            for (int col = 0; col < cols.length; col++) {
+                elements.put(row, col);
+            }
+        }
+        // 빈 블록 좌표를 랜덤하게 선정
+        Object[] keys = elements.keySet().toArray();
+        for (int i = 0; i <= randomCount; i++) {
+            randomIndex = rand.nextInt(elements.size());
+            emptyRow = (int) keys[randomIndex];
+            emptyCol = elements.get(keys[randomIndex]);
+            elements.remove(emptyRow);
+        }
+
     }
 
     private void initNumber() {

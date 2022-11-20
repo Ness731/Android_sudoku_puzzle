@@ -95,6 +95,13 @@ public class Sudoku {
         System.out.println(")");
     }
 
+    public void print1dArr(Object[] arr) {
+        System.out.print("( ");
+        for (int i = 0; i < arr.length; i++)
+            System.out.print(arr[i] + " ");
+        System.out.println(")");
+    }
+
     private int[] setField(int n) {
         for (int[] g : groups) {
             for (int i = 0; i < g.length; i++) {
@@ -113,6 +120,61 @@ public class Sudoku {
             System.out.println();
         }
     }
+
+    public void setAllEmptyButton() {
+        for (int[] rows : groups) {
+            for (int[] cols : groups) {
+                setEmptyButton(rows, cols);
+            }
+            System.out.println("---------------");
+        }
+    }
+
+    private void setEmptyButton(int[] rows, int[] cols) {
+        ArrayList<int[]> elements = new ArrayList<>();
+        Random rand = new Random();
+        int randomCount = rand.nextInt(5) + 2; // 빈 블록 개수는 2~6개
+        int[] randomIndex;
+        int emptyRow, emptyCol;
+        System.out.print("rows : ");
+        print1dArr(rows);
+
+        System.out.print("cols : ");
+        print1dArr(cols);
+
+        for (int i = 0; i < rows.length; i++) { // 3x3 영역의 좌표를 hashmap 형태로 변환
+            for (int j = 0; j < cols.length; j++) {
+                elements.add(new int[]{rows[i], cols[j]});
+            }
+        }
+        /* // 총 9블록이 나와야 함 -> 성공
+        for(int[] a : elements)
+            print1dArr(a);
+        */
+        System.out.println("빈 블록 개수 : " + randomCount);
+        // 빈 블록 좌표를 랜덤하게 선정
+        for (int i = 0; i < randomCount; i++) {
+            int idx = rand.nextInt(elements.size());
+            randomIndex = elements.get(idx);
+            elements.remove(idx);
+            System.out.println(i + "번째 빈 블록 : (" + randomIndex[0] + ", " + randomIndex[1] + ")");
+        }
+        System.out.println();
+    }
+
+    /* [빈 블록 생성 과정]
+    1. 랜덤하게 선정된 n개의 빈 블록 좌표를 받는다.
+    2. 해당 좌표의 버튼을 받아온다.
+    3. 해당 버튼 위에 빈 버튼을 겹치게 생성한다. -> 아마 레이아웃이 필요할듯?
+
+    ** 베이스 보드에 있는 버튼들은 클릭 비허용으로 바꿔야함!! **
+
+    [빈 블록 속성]
+    1. 클릭 허용 -> 온클릭 리스너로 다이어그램 띄우기
+    2. 다이어그램에서 선택된 숫자를 받아서 블록의 text로 설정하기
+
+    하 숫자 여러 개 넣는 건 또 어떻게 해야돼 개어렵네
+    */
 
     public static void main(String[] args) {
         BoardGenerator bg = new BoardGenerator();
