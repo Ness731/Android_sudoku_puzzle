@@ -1,6 +1,7 @@
 package com.example.sudoku;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.ViewCompat;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -16,8 +17,7 @@ import android.widget.TableRow;
 
 import com.google.android.material.button.MaterialButton;
 
-import java.util.HashMap;
-import java.util.Random;
+import java.util.ArrayList;
 
 import es.dmoral.toasty.Toasty;
 
@@ -80,12 +80,19 @@ public class HomeActivity extends AppCompatActivity {
 
     @SuppressLint("ResourceAsColor")
     private void createButton(TableLayout tableLayout) {
+        board = new BoardGenerator();
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
+                // 보드 위 버튼들은 동적으로 생성되기 때문에 R.id 목록에 없다.
+                // 따라서 ViewCompat.generateViewId()을 통해 직접 설정해준다.
+                arg0.setId(ViewCompat.generateViewId());
+                int button_id = arg0.getId();
                 View dialogButton = null;
                 final Dialog dialog = new Dialog(context);
+
                 dialog.setContentView(R.layout.number_pad);
+
                 for (int i = 0; i < buttonID.length; i++) {
                     if (i < 9) {
                         dialogButton = (Button) dialog.findViewById(buttonID[i]);
@@ -93,9 +100,13 @@ public class HomeActivity extends AppCompatActivity {
                         dialogButton = (ImageButton) dialog.findViewById(buttonID[i]);
                     }
                     int finalI = i;
+                    System.out.print("클릭된 다이얼로그 버튼 : " + finalI);
                     dialogButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            String num = String.valueOf(finalI + 1);
+                            if (finalI < 9)
+                                changeButtonNum(button_id, num);
                             dialog.dismiss();
                             Toasty.info(context, initMessage(finalI)).show();
                         }
@@ -114,7 +125,6 @@ public class HomeActivity extends AppCompatActivity {
             );
             tableRow.setPadding(0, -15, 0, -15);
             for (int col = 0; col < 9; col++) {
-                board = new BoardGenerator();
                 buttons[row][col] = new MaterialButton(context);
                 TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(
                         TableRow.LayoutParams.WRAP_CONTENT,
@@ -131,40 +141,84 @@ public class HomeActivity extends AppCompatActivity {
                 String number = Integer.toString(board.get(row, col));
                 setButtonDesign(row, col, number, layoutParams, listener);
                 tableRow.addView(buttons[row][col]);
+                buttons[row][col].setEnabled(false);
             }
             tableLayout.addView(tableRow);
         }
+        createEmptyButton();
     }
 
-    private void setAllEmptyButton() {
-        for (int[] rows : groups) {
-            for (int[] cols : groups) {
-                setEmptyButton(rows, cols);
-            }
+    @SuppressLint("ResourceAsColor")
+    private void changeButtonNum(int button_id, String num) {
+        Button btn = (Button) findViewById(button_id);
+        int[] index = findBtnIndex(btn);
+        // 버튼 숫자 변경
+        if (!num.isEmpty() && btn != null) {
+            btn.setText(num);
+        }
+        // 버튼 숫자의 유효성 검사
+        SudokuRule rule = new SudokuRule(extractBoard());
+        if (rule.check(index[0], index[1])) {
+            btn.setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.white)));
+            btn.setTextColor(getResources().getColor(R.color.light_blue_A400));
+        } else {
+            btn.setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.salmon)));
+            btn.setTextColor(getResources().getColor(R.color.black));
         }
     }
 
-    private void setEmptyButton(int[] rows, int[] cols) {
-        HashMap<Integer, Integer> elements = new HashMap<>();
-        Random rand = new Random();
-        int randomCount = rand.nextInt(5) + 2; // 빈 블록 개수는 2~6개
-        int randomIndex;
-        int emptyRow, emptyCol;
-
-        for (int row = 0; row < rows.length; row++) { // 3x3 영역의 좌표를 hashmap 형태로 변환
-            for (int col = 0; col < cols.length; col++) {
-                elements.put(row, col);
+    private int[] findBtnIndex(Button btn) {
+        int[] index = new int[2];
+        for (int i = 0; i < buttons.length; i++) {
+            for (int j = 0; j < buttons.length; j++) {
+                if(buttons[i][j].equals(btn)){
+                    index[0] = i;
+                    index[1] = j;
+                    return index;
+                }
             }
         }
-        // 빈 블록 좌표를 랜덤하게 선정
-        Object[] keys = elements.keySet().toArray();
-        for (int i = 0; i <= randomCount; i++) {
-            randomIndex = rand.nextInt(elements.size());
-            emptyRow = (int) keys[randomIndex];
-            emptyCol = elements.get(keys[randomIndex]);
-            elements.remove(emptyRow);
-        }
+        return index;
+    }
 
+    private int[][] extractBoard() {
+        int[][] board = new int[9][9];
+        String txt = "";
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board.length; j++) {
+                Button btn = buttons[i][j];
+                txt = (String) btn.getText();
+                if (txt.isEmpty())
+                    board[i][j] = 0;
+                else
+                    board[i][j] = Integer.parseInt(txt);
+            }
+        }
+        return board;
+    }
+    /* [빈 블록 생성 과정]
+    1. 랜덤하게 선정된 n개의 빈 블록 좌표를 받는다.
+    2. 해당 좌표의 버튼을 받아온다.
+    3. 해당 버튼 위에 빈 버튼을 겹치게 생성한다. -> 아마 레이아웃이 필요할듯?
+
+    ** 베이스 보드에 있는 버튼들은 클릭 비허용으로 바꿔야함!! **
+
+    [빈 블록 속성]
+    1. 클릭 허용 -> 온클릭 리스너로 다이어그램 띄우기
+    2. 다이어그램에서 선택된 숫자를 받아서 블록의 text로 설정하기
+    하 숫자 여러 개 넣는 건 또 어떻게 해야돼 개어렵네
+    */
+
+    private void createEmptyButton() {
+        SudokuRule rule = new SudokuRule(board.get());
+        ArrayList<int[]> emptyButtons = rule.setAllEmptyButton();
+        int row, col;
+        for (int[] btns : emptyButtons) {
+            row = btns[0];
+            col = btns[1];
+            buttons[row][col].setText("");
+            buttons[row][col].setEnabled(true);
+        }
     }
 
     private void initNumber() {
@@ -188,7 +242,7 @@ public class HomeActivity extends AppCompatActivity {
         buttons[i][j].setLayoutParams(layoutParams);
         buttons[i][j].setText(number);
         buttons[i][j].setTextSize(20);
-        buttons[i][j].setTextColor(R.color.black);
+        buttons[i][j].setTextColor(getResources().getColor(R.color.black));
         buttons[i][j].setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.white)));
         buttons[i][j].setOnClickListener(listener);
         buttons[i][j].setCornerRadius(0);
