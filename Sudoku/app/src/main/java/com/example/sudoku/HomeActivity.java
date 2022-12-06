@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
 
 import com.google.android.material.button.MaterialButton;
 
@@ -29,6 +30,7 @@ public class HomeActivity extends AppCompatActivity {
     final Context context = this;
     final int[][] groups = new int[][]{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
     int[] margin = new int[4];
+    int selectedNum = -1;
     BoardGenerator board;
 
     @Override
@@ -68,7 +70,7 @@ public class HomeActivity extends AppCompatActivity {
                 reset_confirm.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        initNumber();
+                        initGame();
                         dialog.dismiss();
                         Toasty.info(context, resetMessage[0]).show();
                     }
@@ -84,31 +86,52 @@ public class HomeActivity extends AppCompatActivity {
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                // 보드 위 버튼들은 동적으로 생성되기 때문에 R.id 목록에 없다.
-                // 따라서 ViewCompat.generateViewId()을 통해 직접 설정해준다.
+                selectedNum = -1;
+                // 보드 위 버튼들에 대한 ID를 직접 부여
                 arg0.setId(ViewCompat.generateViewId());
+
                 int button_id = arg0.getId();
                 View dialogButton = null;
+
                 final Dialog dialog = new Dialog(context);
-
                 dialog.setContentView(R.layout.number_pad);
+                TextView topNum = (TextView) dialog.findViewById(R.id.selectedNum);
 
+                // 숫자패드 내에 있는 모든 버튼에 onClick 메소드를 추가한다.
                 for (int i = 0; i < buttonID.length; i++) {
                     if (i < 9) {
+                        // 숫자 버튼
                         dialogButton = (Button) dialog.findViewById(buttonID[i]);
                     } else {
+                        // 취소, 확인 버튼
                         dialogButton = (ImageButton) dialog.findViewById(buttonID[i]);
                     }
                     int finalI = i;
-                    System.out.print("클릭된 다이얼로그 버튼 : " + finalI);
+
                     dialogButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            // 클릭된 버튼 값
                             String num = String.valueOf(finalI + 1);
-                            if (finalI < 9)
-                                changeButtonNum(button_id, num);
-                            dialog.dismiss();
-                            Toasty.info(context, initMessage(finalI)).show();
+
+                            // 클릭된 버튼이 숫자 버튼일 경우, 값을 상단에 표시한다.
+                            if (finalI < 9) {
+                                topNum.setText(num);
+                                selectedNum = finalI + 1;
+                                Toasty.info(context, initMessage(finalI)).show();
+                            }
+                            // 취소버튼일 경우 아무런 동작도 하지 않고 다이얼로그를 없앤다.
+                            if(finalI == 9) {
+                                dialog.dismiss();
+                                Toasty.info(context, initMessage(finalI)).show();
+                            }
+                            // 확인 버튼일 경우, 숫자가 선택된 상태라면 보드의 블록 값을 변경한다.
+                            if(finalI == 10) {
+                                if(selectedNum > -1)
+                                    changeButtonNum(button_id, Integer.toString(selectedNum));
+                                dialog.dismiss();
+                                Toasty.info(context, initMessage(finalI)).show();
+                            }
                         }
                     });
                 }
@@ -158,6 +181,7 @@ public class HomeActivity extends AppCompatActivity {
         }
         // 버튼 숫자의 유효성 검사
         SudokuRule rule = new SudokuRule(extractBoard());
+
         if (rule.check(index[0], index[1])) {
             btn.setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.white)));
             btn.setTextColor(getResources().getColor(R.color.light_blue_A400));
@@ -171,7 +195,7 @@ public class HomeActivity extends AppCompatActivity {
         int[] index = new int[2];
         for (int i = 0; i < buttons.length; i++) {
             for (int j = 0; j < buttons.length; j++) {
-                if(buttons[i][j].equals(btn)){
+                if (buttons[i][j].equals(btn)) {
                     index[0] = i;
                     index[1] = j;
                     return index;
@@ -221,14 +245,18 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    private void initNumber() {
+    // 게임을 초기화하는 함수.
+    private void initGame() {
         BoardGenerator board = new BoardGenerator();
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
                 String number = Integer.toString(board.get(i, j));
                 buttons[i][j].setText(number);
+                buttons[i][j].setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.white)));
+                buttons[i][j].setTextColor(getResources().getColor(R.color.black));
             }
         }
+        createEmptyButton();
     }
 
     private void initMargin() {
