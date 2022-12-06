@@ -8,9 +8,11 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -19,20 +21,11 @@ import android.widget.TextView;
 import com.google.android.material.button.MaterialButton;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import es.dmoral.toasty.Toasty;
 
 public class HomeActivity extends AppCompatActivity {
-    final MaterialButton buttons[][] = new MaterialButton[9][9];
-    final int[] buttonID = new int[]{R.id.num1, R.id.num2, R.id.num3,
-            R.id.num4, R.id.num5, R.id.num6, R.id.num7,
-            R.id.num8, R.id.num9, R.id.cancel, R.id.confirm};
-    final Context context = this;
-    final int[][] groups = new int[][]{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
-    int[] margin = new int[4];
-    int selectedNum = -1;
-    BoardGenerator board;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,7 +73,6 @@ public class HomeActivity extends AppCompatActivity {
         });
     }
 
-    @SuppressLint("ResourceAsColor")
     private void createButton(TableLayout tableLayout) {
         board = new BoardGenerator();
         View.OnClickListener listener = new View.OnClickListener() {
@@ -94,7 +86,7 @@ public class HomeActivity extends AppCompatActivity {
                 View dialogButton = null;
 
                 final Dialog dialog = new Dialog(context);
-                dialog.setContentView(R.layout.number_pad);
+                dialog.setContentView(R.layout.dialog_numpad);
                 TextView topNum = (TextView) dialog.findViewById(R.id.selectedNum);
 
                 // 숫자패드 내에 있는 모든 버튼에 onClick 메소드를 추가한다.
@@ -121,13 +113,13 @@ public class HomeActivity extends AppCompatActivity {
                                 Toasty.info(context, initMessage(finalI)).show();
                             }
                             // 취소버튼일 경우 아무런 동작도 하지 않고 다이얼로그를 없앤다.
-                            if(finalI == 9) {
+                            if (finalI == 9) {
                                 dialog.dismiss();
                                 Toasty.info(context, initMessage(finalI)).show();
                             }
                             // 확인 버튼일 경우, 숫자가 선택된 상태라면 보드의 블록 값을 변경한다.
-                            if(finalI == 10) {
-                                if(selectedNum > -1)
+                            if (finalI == 10) {
+                                if (selectedNum > -1)
                                     changeButtonNum(button_id, Integer.toString(selectedNum));
                                 dialog.dismiss();
                                 Toasty.info(context, initMessage(finalI)).show();
@@ -142,11 +134,11 @@ public class HomeActivity extends AppCompatActivity {
         // i=row, j=column을 의미함
         for (int row = 0; row < 9; row++) {
             final TableRow tableRow = new TableRow(context);
-            tableRow.setLayoutParams(new TableLayout.LayoutParams(
-                    TableLayout.LayoutParams.WRAP_CONTENT,
-                    TableLayout.LayoutParams.WRAP_CONTENT)
+            tableRow.setLayoutParams(new FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.WRAP_CONTENT,
+                    FrameLayout.LayoutParams.WRAP_CONTENT)
             );
-            tableRow.setPadding(0, -15, 0, -15);
+            tableRow.setPadding(-4, -13, 0, -13);
             for (int col = 0; col < 9; col++) {
                 buttons[row][col] = new MaterialButton(context);
                 TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(
@@ -154,24 +146,181 @@ public class HomeActivity extends AppCompatActivity {
                         TableRow.LayoutParams.WRAP_CONTENT,
                         1.0f);
 
-                // 3개 단위로 margin을 크게 주는 함수
-                setMargin(row, col);
+                // tablerow(framelayout(button, dialog))
+                // 1. FrameLayout 생성
+                FrameLayout frameLayout = new FrameLayout(context);
+                tableRow.addView(frameLayout);
+                setPadding(row, col);
+                frameLayout.setPadding(padding[0], padding[1], padding[2], padding[3]);
 
-                // setMargins(left, top, right, bottom)
-                layoutParams.setMargins(margin[0], margin[1], margin[2], margin[3]);
+                //2. Memo Pad 생성
+                LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View memo = layoutInflater.inflate(R.layout.layout_memo, frameLayout, true);
+                memoLayouts[row][col] = memo;
 
-                // board.get(i, j)는 int를 반환하고 setText는 String을 받기 때문에 String으로 형변환 필요
+                // 3. Button 생성
                 String number = Integer.toString(board.get(row, col));
                 setButtonDesign(row, col, number, layoutParams, listener);
-                tableRow.addView(buttons[row][col]);
                 buttons[row][col].setEnabled(false);
+                frameLayout.addView(buttons[row][col]);
+
+                // 4. Button map에 두 인스턴스를 추가
+                memoMap.put(buttons[row][col], memoLayouts[row][col]);
             }
             tableLayout.addView(tableRow);
         }
         createEmptyButton();
     }
 
-    @SuppressLint("ResourceAsColor")
+    private void createEmptyButton() {
+        SudokuRule rule = new SudokuRule(board.get());
+        ArrayList<int[]> emptyButtons = rule.setAllEmptyButton();
+        int row, col;
+        for (int[] btns : emptyButtons) {
+            row = btns[0];
+            col = btns[1];
+            buttons[row][col].setText("");
+            buttons[row][col].setEnabled(true);
+            View memo = memoMap.get(buttons[row][col]);
+
+            // 메모 기능 추가를 위한 OnLongClickListener 추가
+            buttons[row][col].setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    v.setId(ViewCompat.generateViewId());
+                    int button_id = v.getId();
+
+                    Button btn = (Button) findViewById(button_id);
+                    btn.setVisibility(View.INVISIBLE);
+
+                    selectedMemo = -1;
+
+                    View dialogButton = null;
+                    final Dialog dialog = new Dialog(context);
+                    dialog.setContentView(R.layout.dialog_memo);
+                    TextView topNum = (TextView) dialog.findViewById(R.id.selectedNum);
+
+                    // 숫자패드 내에 있는 모든 버튼에 onClick 메소드를 추가한다.
+                    for (int i = 0; i < buttonID.length; i++) {
+                        if (i < 9) {
+                            // 숫자 버튼
+                            dialogButton = (Button) dialog.findViewById(buttonID[i]);
+                        } else {
+                            // 취소, 확인 버튼
+                            dialogButton = (ImageButton) dialog.findViewById(buttonID[i]);
+                        }
+                        int finalI = i;
+                        dialogButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // 클릭된 버튼 값
+                                String num = String.valueOf(finalI + 1);
+
+                                // 클릭된 버튼이 숫자 버튼일 경우, 값을 상단에 표시한다.
+                                if (finalI < 9) {
+                                    topNum.setText(num);
+                                    selectedMemo = finalI + 1;
+                                    Toasty.info(context, initMessage(finalI)).show();
+                                }
+                                // 취소버튼일 경우 아무런 동작도 하지 않고 다이얼로그를 없앤다.
+                                if (finalI == 9) {
+                                    dialog.dismiss();
+                                    Toasty.info(context, initMessage(finalI)).show();
+                                }
+                                // 확인 버튼일 경우, 숫자가 선택된 상태라면 보드의 블록 값을 변경한다.
+                                if (finalI == 10) {
+                                    View memo = null;
+                                    for (MaterialButton e : memoMap.keySet()) {
+                                        // 클릭된 아이디에 매핑되는 메모패드를 가져온다.
+                                        if (e.getId() == btn.getId()) {
+                                            memo = memoMap.get(e);
+                                        }
+                                    }
+                                    if (selectedMemo > -1)
+                                        changeMemoNum(memo, selectedMemo);
+                                    dialog.dismiss();
+                                    Toasty.info(context, initMessage(finalI)).show();
+                                }
+                            }
+                        });
+                    }
+                    dialog.show();
+                    return false;
+                }
+            });
+
+            memo.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) { //view == 메모 레이아웃
+                    v.setId(ViewCompat.generateViewId());
+                    int memoId = v.getId();
+                    View memoLayout = (View) findViewById(memoId);
+                    selectedMemo = -1;
+
+                    View dialogButton = null;
+                    final Dialog dialog = new Dialog(context);
+                    dialog.setContentView(R.layout.dialog_memo);
+                    TextView topNum = (TextView) dialog.findViewById(R.id.selectedNum);
+
+                    // 숫자패드 내에 있는 모든 버튼에 onClick 메소드를 추가한다.
+                    for (int i = 0; i < buttonID.length; i++) {
+                        if (i < 9) {
+                            // 숫자 버튼
+                            dialogButton = (Button) dialog.findViewById(buttonID[i]);
+                        } else {
+                            // 취소, 확인 버튼
+                            dialogButton = (ImageButton) dialog.findViewById(buttonID[i]);
+                        }
+                        int finalI = i;
+                        dialogButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                // 클릭된 버튼 값
+                                String num = String.valueOf(finalI + 1);
+
+                                // 클릭된 버튼이 숫자 버튼일 경우, 값을 상단에 표시한다.
+                                if (finalI < 9) {
+                                    topNum.setText(num);
+                                    selectedMemo = finalI + 1;
+                                    Toasty.info(context, initMessage(finalI)).show();
+                                }
+                                // 취소버튼일 경우 아무런 동작도 하지 않고 다이얼로그를 없앤다.
+                                if (finalI == 9) {
+                                    dialog.dismiss();
+                                    Toasty.info(context, initMessage(finalI)).show();
+                                }
+                                // 확인 버튼일 경우, 숫자가 선택된 상태라면 보드의 블록 값을 변경한다.
+                                if (finalI == 10) {
+                                    if (selectedMemo > -1)
+                                        changeMemoNum(memoLayout, selectedMemo);
+                                    dialog.dismiss();
+                                    Toasty.info(context, initMessage(finalI)).show();
+                                }
+                            }
+                        });
+                    }
+                    dialog.show();
+                    return false;
+                }
+            });
+        }
+    }
+
+    private void changeMemoNum(View memo, int selectedMemo) {
+        if (memo != null) {
+            TextView memoNum = memo.findViewById(memoID[selectedMemo - 1]);
+            System.out.println("**** 클릭된 버튼 : " + memoNum.getText());
+
+            int color = memoNum.getCurrentTextColor();
+            String hexColor = String.format("#%06X", (0xFFFFFF & color));
+            System.out.println("*** memoNum.getText() 버튼의 현재 색상: " + hexColor + "\n");
+
+            if (hexColor.equals("#000000")) //이미 클릭된 적 있다면, 취소를 의미하는 흰색으로 바꿈
+                memoNum.setTextColor(getResources().getColor(R.color.white));
+            else memoNum.setTextColor(getResources().getColor(R.color.black));
+        }
+    }
+
     private void changeButtonNum(int button_id, String num) {
         Button btn = (Button) findViewById(button_id);
         int[] index = findBtnIndex(btn);
@@ -220,32 +369,7 @@ public class HomeActivity extends AppCompatActivity {
         }
         return board;
     }
-    /* [빈 블록 생성 과정]
-    1. 랜덤하게 선정된 n개의 빈 블록 좌표를 받는다.
-    2. 해당 좌표의 버튼을 받아온다.
-    3. 해당 버튼 위에 빈 버튼을 겹치게 생성한다. -> 아마 레이아웃이 필요할듯?
 
-    ** 베이스 보드에 있는 버튼들은 클릭 비허용으로 바꿔야함!! **
-
-    [빈 블록 속성]
-    1. 클릭 허용 -> 온클릭 리스너로 다이어그램 띄우기
-    2. 다이어그램에서 선택된 숫자를 받아서 블록의 text로 설정하기
-    하 숫자 여러 개 넣는 건 또 어떻게 해야돼 개어렵네
-    */
-
-    private void createEmptyButton() {
-        SudokuRule rule = new SudokuRule(board.get());
-        ArrayList<int[]> emptyButtons = rule.setAllEmptyButton();
-        int row, col;
-        for (int[] btns : emptyButtons) {
-            row = btns[0];
-            col = btns[1];
-            buttons[row][col].setText("");
-            buttons[row][col].setEnabled(true);
-        }
-    }
-
-    // 게임을 초기화하는 함수.
     private void initGame() {
         BoardGenerator board = new BoardGenerator();
         for (int i = 0; i < 9; i++) {
@@ -260,8 +384,8 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void initMargin() {
-        for (int i = 0; i < margin.length; i++)
-            margin[i] = 2;
+        for (int i = 0; i < padding.length; i++)
+            padding[i] = 2;
     }
 
     @SuppressLint("ResourceAsColor")
@@ -276,15 +400,15 @@ public class HomeActivity extends AppCompatActivity {
         buttons[i][j].setCornerRadius(0);
     }
 
-    private void setMargin(int i, int j) {
+    private void setPadding(int i, int j) {
         // [0] = left, [1] = top, [2] = right, [3] = bottom)
         initMargin();
-        if (j == 8) margin[2] = 20;
-        if (j == 0) margin[0] = 20;
-        if (i == 8) margin[3] = 20;
-        if (i == 0) margin[1] = 20;
-        if (j == 3 || j == 6) margin[0] = 10;
-        if (i == 3 || i == 6) margin[1] = 10;
+        if (j == 8) padding[2] = 20;
+        if (j == 0) padding[0] = 20;
+        if (i == 8) padding[3] = 20;
+        if (i == 0) padding[1] = 20;
+        if (j == 3 || j == 6) padding[0] = 10;
+        if (i == 3 || i == 6) padding[1] = 10;
     }
 
     private String initMessage(int i) {
@@ -299,4 +423,21 @@ public class HomeActivity extends AppCompatActivity {
         // if button is clicked, close the custom dialog
         return msg;
     }
+
+    final MaterialButton buttons[][] = new MaterialButton[9][9];
+    final int[] buttonID = new int[]{R.id.num1, R.id.num2, R.id.num3,
+            R.id.num4, R.id.num5, R.id.num6, R.id.num7,
+            R.id.num8, R.id.num9, R.id.cancel, R.id.confirm};
+    final int[] memoID = new int[]{R.id.memo1, R.id.memo2, R.id.memo3,
+            R.id.memo4, R.id.memo5, R.id.memo6, R.id.memo7, R.id.memo8, R.id.memo9};
+    View[][] memoLayouts = new View[9][9];
+
+    HashMap<MaterialButton, View> memoMap = new HashMap<>();
+
+    final Context context = this;
+    final int[][] groups = new int[][]{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
+    int[] padding = new int[4];
+    int selectedNum = -1;
+    int selectedMemo = -1;
+    BoardGenerator board;
 }
