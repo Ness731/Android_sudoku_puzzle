@@ -25,10 +25,10 @@ public class SudokuRule {
     //좌표 한 개를 입력받아 해당 숫자의 유효성을 검사하는 메소드
     public boolean check(int row, int col) {
         int code = isValid(row, col);
-        if (code != -1) {
-            return false;
+        if (code == -1) {
+            return true;
         }
-        return true;
+        return false;
     }
 
     public int isValid(int row, int col) {
@@ -36,7 +36,7 @@ public class SudokuRule {
         // 세 메소드 모두 겹치면 false를 반환
         if (!horizontalCheck(row, col))
             return 1;
-        if (!verticalCheck(col, col))
+        if (!verticalCheck(row, col))
             return 2;
         if (!checkSubBoard(row, col))
             return 3;
@@ -44,6 +44,7 @@ public class SudokuRule {
     }
 
     public boolean checkSubBoard(int row, int col) {
+        System.out.println("****** SubBoard check! ******");
         int[] rowField = setField(row);
         int[] colField = setField(col);
 
@@ -69,8 +70,11 @@ public class SudokuRule {
     }
 
     public boolean horizontalCheck(int row, int col) {
-        for (int i = 0; i < board.length - 1; i++) {
-            if (board[row][col] != 0) {
+        System.out.println("****** horizontal check! ******");
+        for (int i = 0; i < board.length; i++) {
+            if (board[row][col] > 0) {
+                System.out.println("좌표 : ( " + row + ", " + i + ")");
+                System.out.println("해당 좌표의 숫자 = " + board[row][i]+"\n");
                 if (i != col && board[row][i] == board[row][col]) //입력받은 좌표가 아니면서 숫자가 겹친다면
                     return false;
             }
@@ -79,8 +83,15 @@ public class SudokuRule {
     }
 
     public boolean verticalCheck(int row, int col) {
-        for (int i = 0; i < board.length - 1; i++) {
-            if (board[row][col] != 0) {
+        System.out.println("****** vertical check! ******");
+        System.out.println("[검사 기준]" + board[row][col]+"\n");
+        System.out.println("좌표 : ( " + row + ", " + col + ")");
+        System.out.println("해당 좌표의 숫자 = " + board[row][col]+"\n");
+        System.out.println("------------------------------");
+        for (int i = 0; i < board.length; i++) {
+            if (board[row][col] > 0) {
+                System.out.println("좌표 : ( " + i + ", " + col + ")");
+                System.out.println("해당 좌표의 숫자 = " + board[i][col]+"\n");
                 if (i != row && board[i][col] == board[row][col]) //입력받은 좌표가 아니면서 숫자가 겹친다면
                     return false;
             }

@@ -25,8 +25,8 @@
             android:textAlignment="center"
             android:textSize="25dp" />
 
-        <EditText
-            android:id="@+id/selected"
+        <TextView
+            android:id="@+id/selectedNum"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="@string/numberpad_num"
