@@ -6,7 +6,9 @@ import androidx.core.view.ViewCompat;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +31,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getSupportActionBar().hide();
         setContentView(R.layout.activity_home);
         initContent();
     }
@@ -38,43 +41,13 @@ public class HomeActivity extends AppCompatActivity {
         final TableLayout tableLayout = (TableLayout) findViewById(R.id.tableLayout);
         tableLayout.setShrinkAllColumns(true);
         initResetButton();
+        initSubmitButton();
         createButton(tableLayout);
-    }
-
-    private void initResetButton() {
-        final Button button = (Button) findViewById(R.id.resetButton);
-        final String[] resetMessage = {"게임이 초기화되었습니다.", "초기화 취소"};
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                final Dialog dialog = new Dialog(context);
-                dialog.setContentView(R.layout.reset_dialog);
-
-                Button reset_cancel = (Button) dialog.findViewById(R.id.reset_cancel);
-                Button reset_confirm = (Button) dialog.findViewById(R.id.reset_confirm);
-
-                reset_cancel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                        Toasty.info(context, resetMessage[1]).show();
-                    }
-                });
-                reset_confirm.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        initGame();
-                        dialog.dismiss();
-                        Toasty.info(context, resetMessage[0]).show();
-                    }
-                });
-                dialog.show();
-            }
-        });
     }
 
     private void createButton(TableLayout tableLayout) {
         board = new BoardGenerator();
+        Typeface typeFace = Typeface.createFromAsset(getAssets(), "nanum_r.otf");
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
@@ -138,7 +111,7 @@ public class HomeActivity extends AppCompatActivity {
                     FrameLayout.LayoutParams.WRAP_CONTENT,
                     FrameLayout.LayoutParams.WRAP_CONTENT)
             );
-            tableRow.setPadding(-4, -13, 0, -13);
+            tableRow.setPadding(0, 0, 8, -13);
             for (int col = 0; col < 9; col++) {
                 buttons[row][col] = new MaterialButton(context);
                 TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(
@@ -146,7 +119,7 @@ public class HomeActivity extends AppCompatActivity {
                         TableRow.LayoutParams.WRAP_CONTENT,
                         1.0f);
 
-                // tablerow(framelayout(button, dialog))
+                // 중첩 순서 : tablerow -> framelayout -> dialog -> button
                 // 1. FrameLayout 생성
                 FrameLayout frameLayout = new FrameLayout(context);
                 tableRow.addView(frameLayout);
@@ -157,11 +130,11 @@ public class HomeActivity extends AppCompatActivity {
                 LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 View memo = layoutInflater.inflate(R.layout.layout_memo, frameLayout, true);
                 memoLayouts[row][col] = memo;
-
                 // 3. Button 생성
                 String number = Integer.toString(board.get(row, col));
                 setButtonDesign(row, col, number, layoutParams, listener);
                 buttons[row][col].setEnabled(false);
+                buttons[row][col].setTypeface(typeFace);
                 frameLayout.addView(buttons[row][col]);
 
                 // 4. Button map에 두 인스턴스를 추가
@@ -170,6 +143,87 @@ public class HomeActivity extends AppCompatActivity {
             tableLayout.addView(tableRow);
         }
         createEmptyButton();
+    }
+
+    private void initResetButton() {
+        final Button button = (Button) findViewById(R.id.resetButton);
+        final String[] resetMessage = {"게임이 초기화되었습니다.", "초기화 취소"};
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                final Dialog dialog = new Dialog(context);
+                dialog.setContentView(R.layout.dialog_reset);
+
+                Button reset_cancel = (Button) dialog.findViewById(R.id.reset_cancel);
+                Button reset_confirm = (Button) dialog.findViewById(R.id.reset_confirm);
+
+                reset_cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                        Toasty.info(context, resetMessage[1]).show();
+                    }
+                });
+                reset_confirm.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        initGame();
+                        dialog.dismiss();
+                        Toasty.info(context, resetMessage[0]).show();
+                    }
+                });
+                dialog.show();
+            }
+        });
+    }
+
+    private void initSubmitButton() {
+        final Button button = (Button) findViewById(R.id.submitButton);
+        final String[] submitiMessage = {"클리어되지 않았습니다.", "게임이 클리어되었습니다.", "게임을 종료합니다.", "게임을 재시작합니다."};
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                // 1. 게임 클리어 여부 검사
+                // 2. 클리어되지 않았다면 단순한 토스트 띄우기
+                if(!checkGameClear()) {
+                    Toasty.info(context, submitiMessage[0]).show();
+                    return;
+                }
+
+                // 3. 클리어 시 다이얼로그 생성
+                Toasty.info(context, submitiMessage[1]).show();
+                final Dialog dialog = new Dialog(context);
+                dialog.setContentView(R.layout.dialog_win);
+
+                Button reset_exit = (Button) dialog.findViewById(R.id.exit_button);
+                Button reset_replay = (Button) dialog.findViewById(R.id.replay_button);
+
+                // 1) 게임 나가기 버튼
+                reset_exit.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                        Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                        startActivity(intent);
+                        Toasty.info(context, submitiMessage[2]).show();
+                    }
+                });
+                // 2) 게임 재시작 버튼
+                reset_replay.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        initGame();
+                        dialog.dismiss();
+                        Toasty.info(context, submitiMessage[3]).show();
+                    }
+                });
+                dialog.show();
+            }
+        });
+    }
+
+    private boolean checkGameClear() {
+        return true;
     }
 
     private void createEmptyButton() {
@@ -303,6 +357,24 @@ public class HomeActivity extends AppCompatActivity {
                     return false;
                 }
             });
+
+            // 메모패드를 짧게 클릭할 경우 원래 버튼으로 되돌아감
+            memo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    v.setId(ViewCompat.generateViewId());
+                    int memoId = v.getId();
+                    View memoLayout = (View) findViewById(memoId);
+
+                    for (MaterialButton b : memoMap.keySet()){
+                        View m = memoMap.get(b);
+                        if(memoLayout.getId() == m.getId()) {
+                            b.setVisibility(View.VISIBLE);
+                            break;
+                        }
+                    }
+                }
+            });
         }
     }
 
@@ -378,15 +450,21 @@ public class HomeActivity extends AppCompatActivity {
                 buttons[i][j].setText(number);
                 buttons[i][j].setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.white)));
                 buttons[i][j].setTextColor(getResources().getColor(R.color.black));
+                buttons[i][j].setEnabled(false);
             }
         }
         createEmptyButton();
+        for (View memo : memoMap.values()) {
+            for(int id : memoID){
+                TextView memoNum = memo.findViewById(id);
+                int color = memoNum.getCurrentTextColor();
+                String hexColor = String.format("#%06X", (0xFFFFFF & color));
+                if (hexColor.equals("#000000"))
+                    memoNum.setTextColor(getResources().getColor(R.color.white));
+            }
+        }
     }
 
-    private void initMargin() {
-        for (int i = 0; i < padding.length; i++)
-            padding[i] = 2;
-    }
 
     @SuppressLint("ResourceAsColor")
     private void setButtonDesign(int i, int j, String number, ViewGroup.LayoutParams layoutParams,
@@ -400,15 +478,20 @@ public class HomeActivity extends AppCompatActivity {
         buttons[i][j].setCornerRadius(0);
     }
 
+    private void initPadding() {
+        for (int i = 0; i < padding.length; i++)
+            padding[i] = 1;
+    }
+
     private void setPadding(int i, int j) {
         // [0] = left, [1] = top, [2] = right, [3] = bottom)
-        initMargin();
-        if (j == 8) padding[2] = 20;
-        if (j == 0) padding[0] = 20;
-        if (i == 8) padding[3] = 20;
-        if (i == 0) padding[1] = 20;
-        if (j == 3 || j == 6) padding[0] = 10;
-        if (i == 3 || i == 6) padding[1] = 10;
+        initPadding();
+        if (j == 8) padding[2] = 8;
+        if (j == 0) padding[0] = 8;
+        if (i == 8) padding[3] = 8;
+        if (i == 0) padding[1] = 8;
+        if (j == 3 || j == 6) padding[0] = 4;
+        if (i == 3 || i == 6) padding[1] = 4;
     }
 
     private String initMessage(int i) {

@@ -24,6 +24,7 @@
             android:paddingBottom="10dp"
             android:text="@string/numberpad_content"
             android:textAlignment="center"
+            android:fontFamily="@font/nanum_b"
             android:textSize="25dp" />
 
         <TextView
@@ -33,6 +34,8 @@
             android:text="@string/numberpad_num"
             android:textAlignment="center"
             android:textSize="35dp"
+            android:fontFamily="@font/nanum_eb"
+            android:textColor="@color/black"
             android:textStyle="bold" />
 
         <TableLayout
@@ -164,7 +167,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:backgroundTint="#F52050"
+                    android:backgroundTint="#969696"
                     app:srcCompat="@drawable/ic_baseline_cancel_24"
                     tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
 
@@ -173,7 +176,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:backgroundTint="#00D050"
+                    android:backgroundTint="@color/purple_500"
                     app:srcCompat="@drawable/ic_baseline_check_circle_24"
                     tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
             </TableRow>

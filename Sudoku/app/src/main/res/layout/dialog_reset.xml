@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/dialogLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="15dp">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_warning" />
+
+        <TextView
+            android:id="@+id/reset_dialog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:letterSpacing="0.1"
+            android:paddingBottom="10dp"
+            android:text="@string/reset_dialog"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            android:textColor="@color/crimson"
+            android:fontFamily="@font/nanum_eb"
+            android:textSize="30dp" />
+
+        <TextView
+            android:id="@+id/reset_dialog_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:letterSpacing="0.03"
+            android:paddingHorizontal="50dp"
+            android:paddingBottom="10dp"
+            android:text="@string/reset_dialog_content"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:fontFamily="@font/nanum_b"
+            android:textSize="14dp" />
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/reset_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/white"
+                android:text="cancel"
+                android:fontFamily="@font/nanum_eb"
+                android:textColor="@color/black" />
+
+            <Button
+                android:id="@+id/reset_confirm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/material_dynamic_neutral50"
+                android:text="reset"
+                android:fontFamily="@font/nanum_eb"
+                android:textColor="@color/white" />
+        </TableRow>
+    </LinearLayout>
+
+
+</RelativeLayout>
