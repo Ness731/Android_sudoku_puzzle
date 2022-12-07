@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Sudoku</string>
     <string name="reset_button">RESET</string>
+    <string name="submit_button">SUBMIT</string>
     <string name="title_activity_intro">IntroActivity</string>
     <string name="play_button">Play</string>
     <string name="intro_content">SUDOKU\nPUZZLE</string>

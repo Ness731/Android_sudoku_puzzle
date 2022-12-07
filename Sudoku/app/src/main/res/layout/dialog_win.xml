@@ -7,10 +7,9 @@
 
     <LinearLayout
         android:id="@+id/dialogLayout"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        android:gravity="center"
         android:orientation="vertical"
         android:paddingHorizontal="20dp"
         android:paddingTop="20dp"
@@ -19,7 +18,7 @@
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_baseline_warning" />
+            android:src="@drawable/ic_celebration" />
 
         <TextView
             android:id="@+id/reset_dialog"
@@ -27,45 +26,49 @@
             android:layout_height="wrap_content"
             android:letterSpacing="0.1"
             android:paddingBottom="10dp"
-            android:text="@string/reset_dialog"
+            android:text="GAME CLEAR!"
             android:textAlignment="center"
-            android:textColor="@color/crimson"
-            android:textSize="20dp" />
+            android:textColor="@color/purple_500"
+            android:fontFamily="@font/nanum_eb"
+            android:textSize="30dp" />
 
         <TextView
             android:id="@+id/reset_dialog_content"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:letterSpacing="0.03"
             android:paddingHorizontal="50dp"
-            android:paddingBottom="10dp"
-            android:text="@string/reset_dialog_content"
+            android:paddingBottom="15dp"
+            android:text="Congratulations!\nPress the button below\nto restart the game."
             android:textAlignment="center"
             android:textColor="@color/black"
-            android:textSize="12dp" />
+            android:fontFamily="@font/nanum_b"
+            android:textSize="13dp" />
 
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <Button
-                android:id="@+id/reset_cancel"
+                android:id="@+id/exit_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="5dp"
                 android:layout_weight="1"
                 android:backgroundTint="@color/white"
-                android:text="cancel"
+                android:text="exit"
+                android:fontFamily="@font/nanum_eb"
                 android:textColor="@color/black" />
 
             <Button
-                android:id="@+id/reset_confirm"
+                android:id="@+id/replay_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/crimson"
-                android:text="reset"
+                android:backgroundTint="@color/purple_500"
+                android:text="replay"
+                android:fontFamily="@font/nanum_eb"
                 android:textColor="@color/white" />
         </TableRow>
     </LinearLayout>

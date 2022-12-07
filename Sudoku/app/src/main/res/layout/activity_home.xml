@@ -8,37 +8,47 @@
         android:id="@+id/tableLayout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/resetButton"
         android:layout_centerHorizontal="true"
+        android:layout_above="@+id/buttonContainer"
         android:layout_marginLeft="5dp"
         android:layout_marginTop="5dp"
         android:layout_marginRight="5dp"
-        android:layout_marginBottom="1dp"
+        android:layout_marginBottom="15dp"
         android:background="#808080"
         android:stretchColumns="*" />
 
-    <Button
-        android:id="@+id/resetButton"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/buttonContainer"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="2dp"
-        android:layout_marginRight="5dp"
-        android:layout_marginBottom="5dp"
-        android:background="@android:color/transparent"
-        android:text="@string/reset_button"
+        android:layout_marginBottom="40dp"
+        android:gravity="center"
+        android:orientation="horizontal">
 
-        android:textColor="@color/black_overlay"
-        android:drawableTop="@drawable/ic_baseline_replay"
-        tools:context=".HomeActivity" />
+        <Button
+            android:id="@+id/resetButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="30dp"
+            android:background="@android:color/transparent"
+            android:drawableTop="@drawable/ic_baseline_replay"
+            android:text="@string/reset_button"
+            android:fontFamily="@font/nanum_eb"
+            android:textColor="@color/black_overlay"
+            tools:context=".HomeActivity" />
 
-    <TextView
-        android:id="@+id/inputNumber"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Input Number" />
+        <Button
+            android:id="@+id/submitButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:background="@android:color/transparent"
+            android:drawableTop="@drawable/ic_submit"
+            android:text="@string/submit_button"
+            android:fontFamily="@font/nanum_eb"
+            android:textColor="@color/black_overlay"
+            tools:context=".HomeActivity" />
+    </LinearLayout>
 
 </RelativeLayout>

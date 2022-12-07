@@ -2,54 +2,58 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:layout_height="match_parent">
 
     <TableLayout
         android:id="@+id/memoLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="5dp"
         android:background="@color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <TableRow
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_weight="1"
+            android:paddingTop="2.5dp"
             android:gravity="center">
 
             <TextView
                 android:id="@+id/memo1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="1"
+                android:gravity="center"
                 android:textAlignment="center"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
+                android:fontFamily="@font/nanum_r"
                 android:textSize="9dp" />
 
             <TextView
                 android:id="@+id/memo2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="2"
+                android:gravity="center"
                 android:textAlignment="center"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
+                android:fontFamily="@font/nanum_r"
                 android:textSize="9dp" />
 
             <TextView
                 android:id="@+id/memo3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="3"
+                android:gravity="center"
                 android:textAlignment="center"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
+                android:fontFamily="@font/nanum_r"
                 android:textSize="9dp" />
         </TableRow>
 
@@ -57,36 +61,43 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:paddingTop="4dp"
             android:gravity="center">
 
             <TextView
                 android:id="@+id/memo4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="4"
+                android:gravity="center"
                 android:textAlignment="center"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
+                android:fontFamily="@font/nanum_r"
                 android:textSize="9dp" />
 
             <TextView
                 android:id="@+id/memo5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="5"
+                android:gravity="center"
                 android:textAlignment="center"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
+                android:fontFamily="@font/nanum_r"
                 android:textSize="9dp" />
 
             <TextView
                 android:id="@+id/memo6"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="6"
+                android:gravity="center"
                 android:textAlignment="center"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
+                android:fontFamily="@font/nanum_r"
                 android:textSize="9dp" />
         </TableRow>
 
@@ -94,36 +105,44 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:paddingTop="4dp"
+            android:paddingBottom="2dp"
             android:gravity="center">
 
             <TextView
                 android:id="@+id/memo7"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="7"
+                android:gravity="center"
                 android:textAlignment="center"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
+                android:fontFamily="@font/nanum_r"
                 android:textSize="9dp" />
 
             <TextView
                 android:id="@+id/memo8"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="8"
+                android:gravity="center"
                 android:textAlignment="center"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
+                android:fontFamily="@font/nanum_r"
                 android:textSize="9dp" />
 
             <TextView
                 android:id="@+id/memo9"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="9"
+                android:gravity="center"
                 android:textAlignment="center"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
+                android:fontFamily="@font/nanum_r"
                 android:textSize="9dp" />
         </TableRow>
 
