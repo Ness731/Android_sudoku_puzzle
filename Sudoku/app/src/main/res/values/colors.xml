@@ -15,4 +15,6 @@
     <color name="crimson">#DC143C</color>
     <color name="salmon">#FA8072</color>
     <color name="light_gray">#F0F0F0</color>
+    <color name="light_purple">#E0D6EE</color>
+    <color name="transparent">#00FFFFFF</color>
 </resources>

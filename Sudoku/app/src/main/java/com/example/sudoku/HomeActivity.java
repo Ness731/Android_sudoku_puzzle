@@ -10,6 +10,9 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +45,7 @@ public class HomeActivity extends AppCompatActivity {
         tableLayout.setShrinkAllColumns(true);
         initResetButton();
         initSubmitButton();
+        createTimer();
         createButton(tableLayout);
     }
 
@@ -111,13 +115,12 @@ public class HomeActivity extends AppCompatActivity {
                     FrameLayout.LayoutParams.WRAP_CONTENT,
                     FrameLayout.LayoutParams.WRAP_CONTENT)
             );
-            tableRow.setPadding(0, 0, 8, -13);
+            tableRow.setPadding(0, -15, 8, -15);
             for (int col = 0; col < 9; col++) {
                 buttons[row][col] = new MaterialButton(context);
                 TableRow.LayoutParams layoutParams = new TableRow.LayoutParams(
                         TableRow.LayoutParams.WRAP_CONTENT,
-                        TableRow.LayoutParams.WRAP_CONTENT,
-                        1.0f);
+                        TableRow.LayoutParams.WRAP_CONTENT);
 
                 // 중첩 순서 : tablerow -> framelayout -> dialog -> button
                 // 1. FrameLayout 생성
@@ -130,6 +133,7 @@ public class HomeActivity extends AppCompatActivity {
                 LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 View memo = layoutInflater.inflate(R.layout.layout_memo, frameLayout, true);
                 memoLayouts[row][col] = memo;
+
                 // 3. Button 생성
                 String number = Integer.toString(board.get(row, col));
                 setButtonDesign(row, col, number, layoutParams, listener);
@@ -185,7 +189,7 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View arg0) {
                 // 1. 게임 클리어 여부 검사
                 // 2. 클리어되지 않았다면 단순한 토스트 띄우기
-                if(!checkGameClear()) {
+                if (!checkGameClear()) {
                     Toasty.info(context, submitiMessage[0]).show();
                     return;
                 }
@@ -203,7 +207,7 @@ public class HomeActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         dialog.dismiss();
-                        Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                         startActivity(intent);
                         Toasty.info(context, submitiMessage[2]).show();
                     }
@@ -366,9 +370,9 @@ public class HomeActivity extends AppCompatActivity {
                     int memoId = v.getId();
                     View memoLayout = (View) findViewById(memoId);
 
-                    for (MaterialButton b : memoMap.keySet()){
+                    for (MaterialButton b : memoMap.keySet()) {
                         View m = memoMap.get(b);
-                        if(memoLayout.getId() == m.getId()) {
+                        if (memoLayout.getId() == m.getId()) {
                             b.setVisibility(View.VISIBLE);
                             break;
                         }
@@ -387,8 +391,8 @@ public class HomeActivity extends AppCompatActivity {
             String hexColor = String.format("#%06X", (0xFFFFFF & color));
             System.out.println("*** memoNum.getText() 버튼의 현재 색상: " + hexColor + "\n");
 
-            if (hexColor.equals("#000000")) //이미 클릭된 적 있다면, 취소를 의미하는 흰색으로 바꿈
-                memoNum.setTextColor(getResources().getColor(R.color.white));
+            if (hexColor.equals("#000000")) //이미 클릭된 적 있다면, 메모 삭제.
+                memoNum.setTextColor(getResources().getColor(R.color.transparent));
             else memoNum.setTextColor(getResources().getColor(R.color.black));
         }
     }
@@ -405,9 +409,9 @@ public class HomeActivity extends AppCompatActivity {
 
         if (rule.check(index[0], index[1])) {
             btn.setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.white)));
-            btn.setTextColor(getResources().getColor(R.color.light_blue_A400));
+            btn.setTextColor(getResources().getColor(R.color.purple_500));
         } else {
-            btn.setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.salmon)));
+            btn.setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.purple_200)));
             btn.setTextColor(getResources().getColor(R.color.black));
         }
     }
@@ -455,12 +459,12 @@ public class HomeActivity extends AppCompatActivity {
         }
         createEmptyButton();
         for (View memo : memoMap.values()) {
-            for(int id : memoID){
+            for (int id : memoID) {
                 TextView memoNum = memo.findViewById(id);
                 int color = memoNum.getCurrentTextColor();
                 String hexColor = String.format("#%06X", (0xFFFFFF & color));
                 if (hexColor.equals("#000000"))
-                    memoNum.setTextColor(getResources().getColor(R.color.white));
+                    memoNum.setTextColor(getResources().getColor(R.color.transparent));
             }
         }
     }
@@ -471,7 +475,9 @@ public class HomeActivity extends AppCompatActivity {
                                  View.OnClickListener listener) {
         buttons[i][j].setLayoutParams(layoutParams);
         buttons[i][j].setText(number);
-        buttons[i][j].setTextSize(20);
+        buttons[i][j].setTextSize(25);
+        buttons[i][j].setPadding(10, 10, 10, 10);
+        buttons[i][j].setGravity(Gravity.CENTER);
         buttons[i][j].setTextColor(getResources().getColor(R.color.black));
         buttons[i][j].setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.white)));
         buttons[i][j].setOnClickListener(listener);
@@ -507,20 +513,82 @@ public class HomeActivity extends AppCompatActivity {
         return msg;
     }
 
-    final MaterialButton buttons[][] = new MaterialButton[9][9];
+    public Runnable runnable = new Runnable() {
+        public void run() {
+            MillisecondTime = SystemClock.uptimeMillis() - StartTime;
+            UpdateTime = TimeBuff + MillisecondTime;
+            Seconds = (int) (UpdateTime / 1000);
+            Minutes = Seconds / 60;
+            Seconds = Seconds % 60;
+            MilliSeconds = (int) (UpdateTime % 1000);
+
+            timer.setText("" + Minutes + ":"
+                    + String.format("%02d", Seconds) + ":"
+                    + String.format("%03d", MilliSeconds));
+
+            handler.postDelayed(this, 0);
+        }
+
+    };
+
+    private void createTimer() {
+        timer = (TextView) findViewById(R.id.tvTimer);
+        start = (Button) findViewById(R.id.btStart);
+        pause = (Button) findViewById(R.id.btPause);
+        reset = (Button) findViewById(R.id.btReset);
+
+        handler = new Handler();
+
+        start.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                StartTime = SystemClock.uptimeMillis();
+                handler.postDelayed(runnable, 0);
+                reset.setEnabled(false);
+            }
+        });
+
+        pause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TimeBuff += MillisecondTime;
+                handler.removeCallbacks(runnable);
+                reset.setEnabled(true);
+            }
+        });
+
+        reset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MillisecondTime = 0L;
+                StartTime = 0L;
+                TimeBuff = 0L;
+                UpdateTime = 0L;
+                Seconds = 0;
+                Minutes = 0;
+                MilliSeconds = 0;
+                timer.setText("00:00:00");
+            }
+        });
+    }
+
+
     final int[] buttonID = new int[]{R.id.num1, R.id.num2, R.id.num3,
             R.id.num4, R.id.num5, R.id.num6, R.id.num7,
             R.id.num8, R.id.num9, R.id.cancel, R.id.confirm};
     final int[] memoID = new int[]{R.id.memo1, R.id.memo2, R.id.memo3,
             R.id.memo4, R.id.memo5, R.id.memo6, R.id.memo7, R.id.memo8, R.id.memo9};
-    View[][] memoLayouts = new View[9][9];
-
-    HashMap<MaterialButton, View> memoMap = new HashMap<>();
-
+    final MaterialButton buttons[][] = new MaterialButton[9][9];
     final Context context = this;
-    final int[][] groups = new int[][]{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}};
+    HashMap<MaterialButton, View> memoMap = new HashMap<>();
+    View[][] memoLayouts = new View[9][9];
     int[] padding = new int[4];
     int selectedNum = -1;
     int selectedMemo = -1;
     BoardGenerator board;
+    TextView timer;
+    Button start, pause, reset;
+    long MillisecondTime, StartTime, TimeBuff, UpdateTime = 0L;
+    Handler handler;
+    int Seconds, Minutes, MilliSeconds;
 }

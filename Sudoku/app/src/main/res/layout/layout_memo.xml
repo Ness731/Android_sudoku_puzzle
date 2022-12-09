@@ -8,7 +8,8 @@
         android:id="@+id/memoLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
+        android:background="#EBDBFF"
+        android:layout_marginTop="5.8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -17,7 +18,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:paddingTop="2.5dp"
+            android:paddingTop="2dp"
+            android:layout_marginBottom="-1dp"
             android:gravity="center">
 
             <TextView
@@ -28,7 +30,7 @@
                 android:text="1"
                 android:gravity="center"
                 android:textAlignment="center"
-                android:textColor="@color/black"
+                android:textColor="@color/transparent"
                 android:fontFamily="@font/nanum_r"
                 android:textSize="9dp" />
 
@@ -40,7 +42,7 @@
                 android:text="2"
                 android:gravity="center"
                 android:textAlignment="center"
-                android:textColor="@color/black"
+                android:textColor="@color/transparent"
                 android:fontFamily="@font/nanum_r"
                 android:textSize="9dp" />
 
@@ -52,7 +54,7 @@
                 android:text="3"
                 android:gravity="center"
                 android:textAlignment="center"
-                android:textColor="@color/black"
+                android:textColor="@color/transparent"
                 android:fontFamily="@font/nanum_r"
                 android:textSize="9dp" />
         </TableRow>
@@ -61,7 +63,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:paddingTop="4dp"
+            android:paddingTop="3dp"
+            android:layout_marginBottom="-1dp"
             android:gravity="center">
 
             <TextView
@@ -72,7 +75,7 @@
                 android:text="4"
                 android:gravity="center"
                 android:textAlignment="center"
-                android:textColor="@color/black"
+                android:textColor="@color/transparent"
                 android:fontFamily="@font/nanum_r"
                 android:textSize="9dp" />
 
@@ -84,7 +87,7 @@
                 android:text="5"
                 android:gravity="center"
                 android:textAlignment="center"
-                android:textColor="@color/black"
+                android:textColor="@color/transparent"
                 android:fontFamily="@font/nanum_r"
                 android:textSize="9dp" />
 
@@ -96,7 +99,7 @@
                 android:text="6"
                 android:gravity="center"
                 android:textAlignment="center"
-                android:textColor="@color/black"
+                android:textColor="@color/transparent"
                 android:fontFamily="@font/nanum_r"
                 android:textSize="9dp" />
         </TableRow>
@@ -105,8 +108,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:paddingTop="4dp"
-            android:paddingBottom="2dp"
+            android:paddingTop="3dp"
+            android:paddingBottom="1dp"
             android:gravity="center">
 
             <TextView
@@ -117,7 +120,7 @@
                 android:text="7"
                 android:gravity="center"
                 android:textAlignment="center"
-                android:textColor="@color/black"
+                android:textColor="@color/transparent"
                 android:fontFamily="@font/nanum_r"
                 android:textSize="9dp" />
 
@@ -129,7 +132,7 @@
                 android:text="8"
                 android:gravity="center"
                 android:textAlignment="center"
-                android:textColor="@color/black"
+                android:textColor="@color/transparent"
                 android:fontFamily="@font/nanum_r"
                 android:textSize="9dp" />
 
@@ -141,7 +144,7 @@
                 android:text="9"
                 android:gravity="center"
                 android:textAlignment="center"
-                android:textColor="@color/black"
+                android:textColor="@color/transparent"
                 android:fontFamily="@font/nanum_r"
                 android:textSize="9dp" />
         </TableRow>
