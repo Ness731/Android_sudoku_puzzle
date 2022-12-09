@@ -44,22 +44,14 @@ public class SudokuRule {
     }
 
     public boolean checkSubBoard(int row, int col) {
-        System.out.println("****** SubBoard check! ******");
         int[] rowField = setField(row);
         int[] colField = setField(col);
-
-        System.out.println("입력 좌표: (" + row + ", " + col + ")");
-        System.out.print("row 그룹:");
-        print1dArr(rowField);
-        System.out.print("col 그룹:");
-        print1dArr(colField);
 
         for (int n = 0; n < rowField.length; n++) {
             for (int m = 0; m < colField.length; m++) {
                 if (board[row][col] != 0) {
                     if (!(rowField[n] == row && colField[m] == col) &&
                             board[rowField[n]][colField[m]] == board[row][col]) { //입력받은 좌표가 아니면서 숫자가 겹친다면
-                        System.out.println();
                         return false;
                     }
                 }
@@ -70,11 +62,8 @@ public class SudokuRule {
     }
 
     public boolean horizontalCheck(int row, int col) {
-        System.out.println("****** horizontal check! ******");
         for (int i = 0; i < board.length; i++) {
             if (board[row][col] > 0) {
-                System.out.println("좌표 : ( " + row + ", " + i + ")");
-                System.out.println("해당 좌표의 숫자 = " + board[row][i]+"\n");
                 if (i != col && board[row][i] == board[row][col]) //입력받은 좌표가 아니면서 숫자가 겹친다면
                     return false;
             }
@@ -83,34 +72,13 @@ public class SudokuRule {
     }
 
     public boolean verticalCheck(int row, int col) {
-        System.out.println("****** vertical check! ******");
-        System.out.println("[검사 기준]" + board[row][col]+"\n");
-        System.out.println("좌표 : ( " + row + ", " + col + ")");
-        System.out.println("해당 좌표의 숫자 = " + board[row][col]+"\n");
-        System.out.println("------------------------------");
         for (int i = 0; i < board.length; i++) {
             if (board[row][col] > 0) {
-                System.out.println("좌표 : ( " + i + ", " + col + ")");
-                System.out.println("해당 좌표의 숫자 = " + board[i][col]+"\n");
                 if (i != row && board[i][col] == board[row][col]) //입력받은 좌표가 아니면서 숫자가 겹친다면
                     return false;
             }
         }
         return true;
-    }
-
-    public void print1dArr(int[] arr) {
-        System.out.print("( ");
-        for (int i = 0; i < arr.length; i++)
-            System.out.print(arr[i] + " ");
-        System.out.println(")");
-    }
-
-    public void print1dArr(Object[] arr) {
-        System.out.print("( ");
-        for (int i = 0; i < arr.length; i++)
-            System.out.print(arr[i] + " ");
-        System.out.println(")");
     }
 
     private int[] setField(int n) {
@@ -121,15 +89,6 @@ public class SudokuRule {
             }
         }
         return null;
-    }
-
-    public void printBoard() {
-        for (int i = 0; i < board.length; i++) { // 행
-            for (int j = 0; j < board.length; j++) { // 열
-                System.out.print(board[i][j] + " ");
-            }
-            System.out.println();
-        }
     }
 
     public ArrayList<int[]> setAllEmptyButton() {
@@ -147,24 +106,12 @@ public class SudokuRule {
         ArrayList<int[]> emptyButtons = new ArrayList<>();
         Random rand = new Random();
         int randomCount = rand.nextInt(5) + 2; // 빈 블록 개수는 2~6개
-        int emptyRow, emptyCol;
-        System.out.print("rows : ");
-        print1dArr(rows);
-
-        System.out.print("cols : ");
-        print1dArr(cols);
 
         for (int i = 0; i < rows.length; i++) { // 3x3 영역의 좌표를 hashmap 형태로 변환
             for (int j = 0; j < cols.length; j++) {
                 elements.add(new int[]{rows[i], cols[j]});
             }
         }
-        /* // 총 9블록이 나와야 함 -> 성공
-        for(int[] a : elements)
-            print1dArr(a);
-        */
-        System.out.println("빈 블록 개수 : " + randomCount);
-        // 빈 블록 좌표를 랜덤하게 선정
         for (int i = 0; i < randomCount; i++) {
             int idx = rand.nextInt(elements.size());
             emptyButtons.add(elements.get(idx));
@@ -172,21 +119,4 @@ public class SudokuRule {
         }
         return emptyButtons;
     }
-/*
-    public static void main(String[] args) {
-        BoardGenerator bg = new BoardGenerator();
-        int[][] board = bg.get();
-        SudokuRule test = new SudokuRule(board);
-        test.printBoard();
-        test.checkAll();
-
-        int[][] board2 = bg.get();
-        board2[0][2] = 5;
-        board2[1][2] = 5;
-        board2[2][2] = 5;
-        SudokuRule test2 = new SudokuRule(board2);
-        test2.printBoard();
-        test2.checkAll();
-    }
- */
 }

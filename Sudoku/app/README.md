@@ -4,4 +4,3 @@
 - __프로젝트 도구__
     <p>Language : Java, xml
     <p>IDE : Adroid Studio
-  

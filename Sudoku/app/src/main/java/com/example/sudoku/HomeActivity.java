@@ -87,19 +87,16 @@ public class HomeActivity extends AppCompatActivity {
                             if (finalI < 9) {
                                 topNum.setText(num);
                                 selectedNum = finalI + 1;
-                                Toasty.info(context, initMessage(finalI)).show();
                             }
                             // 취소버튼일 경우 아무런 동작도 하지 않고 다이얼로그를 없앤다.
                             if (finalI == 9) {
                                 dialog.dismiss();
-                                Toasty.info(context, initMessage(finalI)).show();
                             }
                             // 확인 버튼일 경우, 숫자가 선택된 상태라면 보드의 블록 값을 변경한다.
                             if (finalI == 10) {
                                 if (selectedNum > -1)
                                     changeButtonNum(button_id, Integer.toString(selectedNum));
                                 dialog.dismiss();
-                                Toasty.info(context, initMessage(finalI)).show();
                             }
                         }
                     });
@@ -228,14 +225,10 @@ public class HomeActivity extends AppCompatActivity {
 
     private boolean checkGameClear() {
         String targetColor = "mColors=[-257]mDefaultColor=-257";
-        System.out.println(targetColor);
-        System.out.println("빈 칸 개수 : " + emptyBtns.size());
         for(MaterialButton b : emptyBtns) {
             String bgList = String.valueOf(b.getBackgroundTintList());
-            System.out.println(bgList);
-            if(bgList.contains(targetColor))
-                System.out.println("타겟 컬러를 포함한다.");
-           // if(!bgList.contains(targetColor)) {return false;}
+            if(!bgList.contains(targetColor))
+                return false;
         }
         return true;
     }
@@ -288,12 +281,10 @@ public class HomeActivity extends AppCompatActivity {
                                 if (finalI < 9) {
                                     topNum.setText(num);
                                     selectedMemo = finalI + 1;
-                                    Toasty.info(context, initMessage(finalI)).show();
                                 }
                                 // 취소버튼일 경우 아무런 동작도 하지 않고 다이얼로그를 없앤다.
                                 if (finalI == 9) {
                                     dialog.dismiss();
-                                    Toasty.info(context, initMessage(finalI)).show();
                                 }
                                 // 확인 버튼일 경우, 숫자가 선택된 상태라면 보드의 블록 값을 변경한다.
                                 if (finalI == 10) {
@@ -307,7 +298,6 @@ public class HomeActivity extends AppCompatActivity {
                                     if (selectedMemo > -1)
                                         changeMemoNum(memo, selectedMemo);
                                     dialog.dismiss();
-                                    Toasty.info(context, initMessage(finalI)).show();
                                 }
                             }
                         });
@@ -350,19 +340,16 @@ public class HomeActivity extends AppCompatActivity {
                                 if (finalI < 9) {
                                     topNum.setText(num);
                                     selectedMemo = finalI + 1;
-                                    Toasty.info(context, initMessage(finalI)).show();
                                 }
                                 // 취소버튼일 경우 아무런 동작도 하지 않고 다이얼로그를 없앤다.
                                 if (finalI == 9) {
                                     dialog.dismiss();
-                                    Toasty.info(context, initMessage(finalI)).show();
                                 }
                                 // 확인 버튼일 경우, 숫자가 선택된 상태라면 보드의 블록 값을 변경한다.
                                 if (finalI == 10) {
                                     if (selectedMemo > -1)
                                         changeMemoNum(memoLayout, selectedMemo);
                                     dialog.dismiss();
-                                    Toasty.info(context, initMessage(finalI)).show();
                                 }
                             }
                         });
@@ -395,11 +382,9 @@ public class HomeActivity extends AppCompatActivity {
     private void changeMemoNum(View memo, int selectedMemo) {
         if (memo != null) {
             TextView memoNum = memo.findViewById(memoID[selectedMemo - 1]);
-            System.out.println("**** 클릭된 버튼 : " + memoNum.getText());
 
             int color = memoNum.getCurrentTextColor();
             String hexColor = String.format("#%06X", (0xFFFFFF & color));
-            System.out.println("*** memoNum.getText() 버튼의 현재 색상: " + hexColor + "\n");
 
             if (hexColor.equals("#000000")) //이미 클릭된 적 있다면, 메모 삭제.
                 memoNum.setTextColor(getResources().getColor(R.color.transparent));
@@ -487,7 +472,6 @@ public class HomeActivity extends AppCompatActivity {
                                  View.OnClickListener listener) {
         buttons[i][j].setLayoutParams(layoutParams);
         buttons[i][j].setText(number);
-        System.out.println(number);
         buttons[i][j].setTextSize(25);
         buttons[i][j].setPadding(10, 10, 10, 10);
         buttons[i][j].setGravity(Gravity.CENTER);
