@@ -44,7 +44,7 @@
             android:textAlignment="center"
             android:textColor="@color/black"
             android:fontFamily="@font/nanum_b"
-            android:textSize="14dp" />
+            android:textSize="12dp" />
 
         <TableRow
             android:layout_width="match_parent"
