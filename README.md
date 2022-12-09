@@ -5,5 +5,5 @@
     <p>Language : Java, xml
     <p>IDE : Adroid Studio
 - __실행화면__
-<p><img src="Sudoku/app/src/main/res/drawable-v24/screenshot_main.png" width="30%" height="30%"/> <img src="Sudoku/app/src/main/res/drawable-v24/screenshot_home.png" width="30%" height="30%"/> 
-<p><img src="Sudoku/app/src/main/res/drawable-v24/screenshot_reset.png" width="30%" height="30%"/> <img src="Sudoku/app/src/main/res/drawable/screenshot_clear.png" width="30%" height="30%"/>
+<p><img src="Sudoku/app/src/main/res/drawable-v24/screenshot_main.png" width="40%" height="40%"/> <img src="Sudoku/app/src/main/res/drawable-v24/screenshot_home.png" width="40%" height="40%"/> 
+<p><img src="Sudoku/app/src/main/res/drawable-v24/screenshot_reset.png" width="40%" height="40%"/> <img src="Sudoku/app/src/main/res/drawable/screenshot_clear.png" width="40%" height="40%"/>
