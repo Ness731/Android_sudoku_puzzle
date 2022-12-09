@@ -227,11 +227,15 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private boolean checkGameClear() {
-        String targetColor = String.valueOf(getResources().getColor(R.color.semiwhite));
-        for(MaterialButton b : memoMap.keySet()) {
+        String targetColor = "mColors=[-257]mDefaultColor=-257";
+        System.out.println(targetColor);
+        System.out.println("빈 칸 개수 : " + emptyBtns.size());
+        for(MaterialButton b : emptyBtns) {
             String bgList = String.valueOf(b.getBackgroundTintList());
-            if(!bgList.contains(targetColor))
-                return false;
+            System.out.println(bgList);
+            if(bgList.contains(targetColor))
+                System.out.println("타겟 컬러를 포함한다.");
+           // if(!bgList.contains(targetColor)) {return false;}
         }
         return true;
     }
@@ -246,7 +250,7 @@ public class HomeActivity extends AppCompatActivity {
             buttons[row][col].setText("");
             buttons[row][col].setEnabled(true);
             View memo = memoMap.get(buttons[row][col]);
-
+            emptyBtns.add(buttons[row][col]);
             // 메모 기능 추가를 위한 OnLongClickListener 추가
             buttons[row][col].setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
@@ -453,6 +457,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void initGame() {
+        emptyBtns.clear();
         BoardGenerator board = new BoardGenerator();
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
@@ -461,6 +466,7 @@ public class HomeActivity extends AppCompatActivity {
                 buttons[i][j].setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.white)));
                 buttons[i][j].setTextColor(getResources().getColor(R.color.black));
                 buttons[i][j].setEnabled(false);
+                buttons[i][j].setVisibility(View.VISIBLE);
             }
         }
         createEmptyButton();
@@ -586,6 +592,7 @@ public class HomeActivity extends AppCompatActivity {
     final int[] memoID = new int[]{R.id.memo1, R.id.memo2, R.id.memo3,
             R.id.memo4, R.id.memo5, R.id.memo6, R.id.memo7, R.id.memo8, R.id.memo9};
     final MaterialButton buttons[][] = new MaterialButton[9][9];
+    ArrayList<MaterialButton> emptyBtns = new ArrayList<>();
     final Context context = this;
     HashMap<MaterialButton, View> memoMap = new HashMap<>();
     View[][] memoLayouts = new View[9][9];
