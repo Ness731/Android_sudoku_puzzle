@@ -54,7 +54,7 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:fontFamily="@font/nanum_b"
-            android:backgroundTint="#7381CC"
+            android:backgroundTint="#803F51B5"
             android:text="Reset" />
 
         <com.google.android.material.textfield.TextInputEditText

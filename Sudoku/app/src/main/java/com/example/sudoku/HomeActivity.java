@@ -227,6 +227,12 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private boolean checkGameClear() {
+        String targetColor = String.valueOf(getResources().getColor(R.color.semiwhite));
+        for(MaterialButton b : memoMap.keySet()) {
+            String bgList = String.valueOf(b.getBackgroundTintList());
+            if(!bgList.contains(targetColor))
+                return false;
+        }
         return true;
     }
 
@@ -408,11 +414,11 @@ public class HomeActivity extends AppCompatActivity {
         SudokuRule rule = new SudokuRule(extractBoard());
 
         if (rule.check(index[0], index[1])) {
-            btn.setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.white)));
+            btn.setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.semiwhite)));
             btn.setTextColor(getResources().getColor(R.color.purple_500));
         } else {
-            btn.setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.purple_200)));
-            btn.setTextColor(getResources().getColor(R.color.black));
+            btn.setBackgroundTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.light_gray)));
+            btn.setTextColor(getResources().getColor(R.color.black_overlay));
         }
     }
 
@@ -475,6 +481,7 @@ public class HomeActivity extends AppCompatActivity {
                                  View.OnClickListener listener) {
         buttons[i][j].setLayoutParams(layoutParams);
         buttons[i][j].setText(number);
+        System.out.println(number);
         buttons[i][j].setTextSize(25);
         buttons[i][j].setPadding(10, 10, 10, 10);
         buttons[i][j].setGravity(Gravity.CENTER);
